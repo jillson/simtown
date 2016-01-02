@@ -1,7 +1,7 @@
 import random
 
 #TODO: replace this with a list of lastnames or a generator for same
-class Family:
+class Family(object):
     ID=0
     def __init__(self):
         self.name="Family%d"%Family.ID
@@ -14,7 +14,7 @@ class Gene:
 
 genes = [Gene(x) for x in ["body","strength","dex","intelligence","charisma","will"]]
 
-class Person:
+class Person(object):
     def __init__(self,parents=None):
         if parents:
             self.mate(*parents)
