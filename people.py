@@ -1,13 +1,12 @@
 import random
 
+#TODO: replace this with a list of lastnames or a generator for same
 class Family:
     ID=0
     def __init__(self):
         self.name="Family%d"%Family.ID
         self.id = Family.ID
         Family.ID+= 1
-
-families = [Family() for _ in xrange(1000)]
 
 class Gene:
     def __init__(self,name):
@@ -19,8 +18,13 @@ class Person:
     def __init__(self,parents=None):
         if parents:
             self.mate(*parents)
+            self.parents = parents
+            self.family = parents[0].family
+            self.age = 0
         else:
             self.generate()
+            self.family = Family()
+        self.gender = random.choice("MF")
         self.get_stats()
 
     def mate(self,p1,p2):
@@ -29,6 +33,7 @@ class Person:
         self.genes = p1_picked + p2_picked
 
     def generate(self):
+        self.age = random.randint(16,32)
         self.genes = genes + [random.choice(genes) for _ in xrange(8)]
 
     def get_stats(self):
@@ -46,15 +51,7 @@ class Person:
     def print_stats(self):
         print("%d:%d:%d:%d:%d:%d"%(self.body,self.strength,self.dex,self.intelligence,self.charisma,self.will))
 
-
-population=[Person() for _ in xrange(32)]
-deadPool = [p for p in population if not p.viable()]
-print "We had %d folks die off at the beginning" % len(deadPool)
-for d in deadPool:
-    population.remove(d)
-
-
-def next_gen(population):
+def simple_next_gen(population):
     nextPop = []
     stillborn = 0
     for i in xrange(len(population)//2):
@@ -68,14 +65,23 @@ def next_gen(population):
     random.shuffle(nextPop)
     return nextPop
 
-for p in population:
-    p.print_stats()
+        
 
-for gen in xrange(20):
-    population = next_gen(population)
+if __name__ == '__main__':
+    population=[Person() for _ in xrange(32)]
+    deadPool = [p for p in population if not p.viable()]
+    print "We had %d folks die off at the beginning" % len(deadPool)
+    for d in deadPool:
+        population.remove(d)
 
-for p in population:
-    p.print_stats()
+    for p in population:
+        p.print_stats()
+
+    for gen in xrange(20):
+        population = simple_next_gen(population)
+
+    for p in population:
+        p.print_stats()
 
 
 
