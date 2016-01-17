@@ -47,8 +47,13 @@ class Town(object):
         men.remove(self.king)
         self.queen = pickBest(women,makeWeightedAddRule([[2,"charisma"],[2,"intelligence"],[-0.1,"age"],[1,"body"]]))[0]
         self.queen.job = "queen"
+        women.remote(self.queen)
         #TODO: allow king to order priorites based on his traits
-        
+        commander = pickBest(men,makeWeightedRule([[1,"charisma"],[2,"strength"],[2,"body"],[1,"intelligence"]]))[0]
+        men.remove(commander)
+        priest = pickBest(men,makeWeightedRule([[2,"charisma"],[2,"intelligence"],[1,"age"]]))[0]
+        men.remove(priest)
+        headfarmers = pickBest(men,makeWeightedRule([[1,"charisma"],[2,"strength"],[2,"body"],[1,"intelligence"]]),4)
         
         
 
