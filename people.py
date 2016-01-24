@@ -13,8 +13,8 @@ class Gene:
     def __init__(self,name):
         self.name = name
 
-attribnames = ["body","strength","dex","intelligence","charisma","will"]
-genes = [Gene(x) for x in attribnames]
+attribNames = ["body","strength","dex","intelligence","charisma","will"]
+genes = [Gene(x) for x in attribNames]
 
 class Person(object):
     ID=0
@@ -31,6 +31,14 @@ class Person(object):
             self.family = Family()
         self.gender = random.choice("MF")
         self.get_stats()
+        self.job = None
+
+    def setJob(self,newJob):
+        if self.job:
+            self.job.removeWorker(self)
+        if newJob:
+            newJob.addWorker(self)
+        self.job = newJob
 
     def mate(self,p1,p2):
         p1_picked = random.sample(p1.genes,7)
@@ -56,7 +64,7 @@ class Person(object):
     def print_stats(self,out=sys.stdout):
         out.write("%d:%d:%d:%d:%d:%d"%(self.body,self.strength,self.dex,self.intelligence,self.charisma,self.will))
     def json(self):
-        return dict([[v,self.__dict__[v]] for v in ["name","age","gender"] + attribnames])
+        return dict([[v,self.__dict__[v]] for v in ["name","age","gender"] + attribNames])
 
 def simple_next_gen(population,out=sys.stdout):
     nextPop = []

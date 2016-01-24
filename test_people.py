@@ -4,6 +4,15 @@ from mock import patch
 from people import Person, simple_next_gen, reaper
 from StringIO import StringIO
 
+class FakeJob:
+  def __init__(self):
+    pass
+  def removeWorker(self,w):
+    pass
+  def addWorker(self,w):
+    pass
+  
+
 class TestPeople(unittest.TestCase):
 
   #TODO: mock random
@@ -79,7 +88,17 @@ class TestPeople(unittest.TestCase):
     p = Person()
     x = p.json()
     pass
-  
+  def test_job(self):
+    j = FakeJob()
+    j2 = FakeJob()
+    p = Person()
+    self.assertEqual(p.job,None)
+    #TODO: replace FakeJob with a real mock and check calls
+    p.setJob(j)
+    self.assertEqual(p.job,j)
+    p.setJob(j2)
+    self.assertEqual(p.job,j2)
+    
   
 if __name__ == '__main__': # pragma: no cover
     unittest.main()
