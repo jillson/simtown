@@ -1,6 +1,8 @@
 import random
 import sys
-
+from collections import defaultdict
+from utils import pickBest,makeWeightedRule
+        
 #TODO: replace this with a list of lastnames or a generator for same
 class Family(object):
     ID=0
@@ -15,6 +17,57 @@ class Gene:
 
 attribNames = ["body","strength","dex","intelligence","charisma","will"]
 genes = [Gene(x) for x in attribNames]
+
+        
+#This may want to go in its own class with crazy patterns and stuff but for now
+def court(men,women):
+    #filter out marriaged people
+    men = dict([[man,[]] for man in men if not man.spouse])
+    women = [man for man in women if not man.spouse]
+    wooed = defaultdict(list)
+    for man in men:
+        men[man] = pickBest(women,makeWeightedRule([[man.__dict__[a],a] for a in attribNames]),len(women))
+        wooed[men[man][0]].append(man)
+    rejected = []
+    previousRejected = []
+    toReject = max(0,len(men) - len(women))
+    while True:
+        
+        #print "Debug: men's ranking:"
+        #for m in men:
+        #    print m.name,[f.name for f in men[m]]
+        #print "Debug: wooed list:"
+        #for w in wooed:
+        #    print w.name,[m.name for m in wooed[w]]
+        #print "We will expect %d men to get rejected" % (toReject)
+    
+
+        for woman in wooed:
+            if len(wooed[woman]) <= 1:
+                #print "This woman (%s) has %d suitor(s)" % (woman.name,len(wooed[woman]))
+                continue
+            best = pickBest(wooed[woman],makeWeightedRule([[woman.__dict__[a],a] for a in attribNames]))[0]
+            for m in wooed[woman]:
+                if m != best:
+                    men[m].pop(0)
+                    rejected.append(m)
+            wooed[woman] = [best]
+        rejected = set(rejected)
+        #NOTE: bug ... should modify so it requires that the rejected list be the same as the previous iteration
+        if len(rejected) <= toReject and rejected == previousRejected:
+            break
+        for r in rejected:
+            if len(men[r]) > 0:
+                wooed[men[r][0]].append(r)
+                #print "Debug... rejected:",r.name
+            #else:
+                #print "%s ran out of folks to ask" % r.name
+        previousRejected = rejected
+        rejected = []
+    for woman in wooed:
+        if wooed[woman]:
+            wooed[woman][0].marry(woman)
+        
 
 class Person(object):
     ID=0
@@ -32,6 +85,7 @@ class Person(object):
         self.gender = random.choice("MF")
         self.get_stats()
         self.job = None
+        self.spouse = None
 
     def setJob(self,newJob):
         if self.job:
@@ -39,6 +93,16 @@ class Person(object):
         if newJob:
             newJob.addWorker(self)
         self.job = newJob
+
+    def marry(self,spouse):
+        if not self.spouse and not spouse.spouse and spouse.gender != self.gender:
+            self.spouse = spouse
+            self.spouse.spouse = self
+
+    def divorce(self):
+        if self.spouse:
+            self.spouse.spouse = None
+            self.spouse = None
 
     def mate(self,p1,p2):
         p1_picked = random.sample(p1.genes,7)

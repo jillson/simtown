@@ -1,7 +1,7 @@
 import unittest
 #TODO: do we want to do magic so we import unittest.mock if python3 and mock if python 2?
 from mock import patch
-from people import Person, simple_next_gen, reaper
+from people import Person, simple_next_gen, reaper, attribNames, court
 from StringIO import StringIO
 
 class FakeJob:
@@ -98,8 +98,60 @@ class TestPeople(unittest.TestCase):
     self.assertEqual(p.job,j)
     p.setJob(j2)
     self.assertEqual(p.job,j2)
+  def test_marriage(self):
+    m = Person()
+    f = Person()
+    m2 = Person()
+    m.gender = "M"
+    m2.gender = "M"
+    f.gender = "F"
+    m.marry(f)
+    self.assertEqual(m.spouse,f)
+    self.assertEqual(f.spouse,m)
+    m.divorce()
+    self.assertEqual(m.spouse,None)
+    self.assertEqual(f.spouse,None)
+    m.marry(m2) #not dealing with it
+    self.assertEqual(m.spouse,None)
+    self.assertEqual(m2.spouse,None)
+    f.marry(m2)
+    m.marry(f)
+    self.assertEqual(m.spouse,None)
+    self.assertEqual(m2.spouse,f)
+    self.assertEqual(f.spouse,m2)
+
+  def test_courting(self):
+    self.common_courting(4,4)
+    self.common_courting(6,4)
+    self.common_courting(4,6)
     
-  
+
+  def common_courting(self,nm,nw):
+    men = [Person() for _ in xrange(nm)]
+    women = [Person() for _ in xrange(nw)]
+    biggest = max(nm,nw)+10
+    for i in xrange(nm):
+      men[i].gender = "M"
+      for a in attribNames:
+        men[i].__dict__[a] = biggest-i
+    for i in xrange(nw):
+      women[i].gender = "F"
+      for a in attribNames:
+        women[i].__dict__[a] = biggest-i
+
+    court(men,women)
+    for i in xrange(min(nm,nw)):
+      self.assertEqual(men[i].spouse,women[i])
+      self.assertEqual(women[i].spouse,men[i])
+    if nm > nw:
+      extra = men
+    else:
+      extra = women
+    for i in xrange(min(nm,nw),max(nm,nw)):
+      self.assertEqual(extra[i].spouse,None)
+
+      
+    
 if __name__ == '__main__': # pragma: no cover
     unittest.main()
 

@@ -4,7 +4,7 @@ from operator import mul,add
 import random
 
 def pickBest(alist,metric,n=1,picker=None):
-    if len(alist) <= n:
+    if len(alist) < n:
         if len(alist) > 0:
             random.shuffle(alist)
         return alist
