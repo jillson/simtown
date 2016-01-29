@@ -22,10 +22,10 @@ def pickBest(alist,metric,n=1,picker=None):
 
 #TODO: make this be handle p
 def makeRule(attribs):
-    return lambda x,p=None: reduce(mul,[x.__dict__.get(a,0) for a in attribs])
+    return lambda x,p=None: reduce(mul,[x.attrib[a] for a in attribs])
 
 def makeWeightedRule(weighted_attribs):
-    return lambda x,p=None: reduce(mul,[x.__dict__.get(a[1],0)*a[0] for a in weighted_attribs])
+    return lambda x,p=None: reduce(mul,[x.attrib[a[1]]*a[0] for a in weighted_attribs])
 
 def makeWeightedAddRule(weighted_attribs):
-    return lambda x,p=None: reduce(add,[x.__dict__.get(a[1],0)*a[0] for a in weighted_attribs])
+    return lambda x,p=None: reduce(add,[x.attrib[a[1]]*a[0] for a in weighted_attribs])

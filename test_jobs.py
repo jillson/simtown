@@ -6,6 +6,8 @@ except ImportError:
     from mock import patch
 
 from StringIO import StringIO
+from collections import defaultdict
+
 
 from job import Job
 from people import Person, attribNames
@@ -13,6 +15,7 @@ from people import Person, attribNames
 class FakePerson:
     def __init__(self):
         self.job = None
+        self.attrib = defaultdict(int)
     def setJob(self,job):
         if self.job:
             self.job.removeWorker(self)
@@ -63,17 +66,17 @@ class TestJob(unittest.TestCase):
         j = self.job
         p1 = FakePerson()
         for a in attribNames:
-            p1.__dict__[a] = 1
+            p1.attrib[a] = 1
         self.assertEqual(1,j.rank(p1))
         for a in attribNames:
-            p1.__dict__[a] = 2
+            p1.attrib[a] = 2
         self.assertEqual(2**6,j.rank(p1))
     def testFillSlots(self):
         better = FakePerson()
         worse = FakePerson()
         for a in attribNames:
-            worse.__dict__[a] = 1
-            better.__dict__[a] = 2
+            worse.attrib[a] = 1
+            better.attrib[a] = 2
         j = self.job
         better.setJob(j)
         worse.setJob(j)

@@ -6,7 +6,7 @@ from utils import makeWeightedRule, pickBest
 class WorkerWrapper:
     def __init__(self,worker,rank):
         self.worker = worker
-        self.rank = rank
+        self.attrib = {"rank":rank}
 
 
 class Job:

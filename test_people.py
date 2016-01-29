@@ -1,7 +1,7 @@
 import unittest
 #TODO: do we want to do magic so we import unittest.mock if python3 and mock if python 2?
 from mock import patch
-from people import Person, simple_next_gen, reaper, attribNames, court
+from people import Person, AttributeMap, Skill, skillDict, simple_next_gen, reaper, attribNames, court
 from StringIO import StringIO
 
 class FakeJob:
@@ -11,7 +11,34 @@ class FakeJob:
     pass
   def addWorker(self,w):
     pass
-  
+
+class FakePerson:
+  pass
+
+class TestAttributes(unittest.TestCase):
+  def testBasic(self):
+    a = AttributeMap(attribNames)
+    p = FakePerson()
+    p.attrib = a
+    p.attrib[attribNames[0]] = 4
+    self.assertEqual(4,p.attrib[attribNames[0]])
+    self.assertEqual(0,p.attrib["nonExistent"])
+  def testSkills(self):
+    sampleAttrib = attribNames[0]
+    a = AttributeMap(attribNames)
+    p = FakePerson()
+    p.attrib = a
+    p.attrib[attribNames[0]] = 4
+    skillDict["dummy"] = Skill("dummy",sampleAttrib)
+    skillDict["untrained"] = Skill("untrained","nonExistent")
+    skillDict["trained"] = Skill("trained",attribNames[1])
+    p.attrib["trained"] = 5
+    self.assertEqual(4,p.attrib["dummy"])
+    self.assertEqual(0,p.attrib["dummy2"])
+    self.assertEqual(5,p.attrib["trained"])
+    p.attrib[attribNames[1]] = 2
+    self.assertEqual(7,p.attrib["trained"])
+    
 
 class TestPeople(unittest.TestCase):
 
@@ -20,24 +47,20 @@ class TestPeople(unittest.TestCase):
   
   def test_check_first_gen(self):
       p = Person()
-      self.assertGreater(p.age,15)
-      self.assertLessEqual(p.age,32)
+      self.assertGreater(p.attrib["age"],15)
+      self.assertLessEqual(p.attrib["age"],32)
 
   def test_viable(self):
       p = Person()
-      p.body = 0
+      p.attrib["body"] = 0
       self.assertFalse(p.viable())
-      p.body = 1
-      p.strength = 1
-      p.intelligence = 1
-      p.charisma = 1
-      p.will = 1
-      p.dex = 1
+      for a in attribNames:
+        p.attrib[a] = 1
       self.assertTrue(p.viable())
-      for dstat in ["body","strength","intelligence","charisma","will","dex"]:
-          p.__dict__[dstat] = 0
+      for dstat in attribNames:
+          p.attrib[dstat] = 0
           self.assertFalse(p.viable())
-          p.__dict__[dstat] = 1
+          p.attrib[dstat] = 1
           
   def test_check_second_gen(self):
       p1 = Person()
@@ -46,12 +69,8 @@ class TestPeople(unittest.TestCase):
 
   def test_output(self):
       p = Person()
-      p.body = 1
-      p.strength = 2
-      p.dex = 3
-      p.intelligence = 4
-      p.charisma = 5
-      p.will = 6
+      for i,v in enumerate(attribNames):
+        p.attrib[v] = i+1
 
       out = StringIO()
       p.print_stats(out=out)
@@ -133,11 +152,11 @@ class TestPeople(unittest.TestCase):
     for i in xrange(nm):
       men[i].gender = "M"
       for a in attribNames:
-        men[i].__dict__[a] = biggest-i
+        men[i].attrib[a] = biggest-i
     for i in xrange(nw):
       women[i].gender = "F"
       for a in attribNames:
-        women[i].__dict__[a] = biggest-i
+        women[i].attrib[a] = biggest-i
 
     court(men,women)
     for i in xrange(min(nm,nw)):

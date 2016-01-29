@@ -9,27 +9,29 @@ from StringIO import StringIO
 
 from utils import pickBest, makeRule, makeWeightedRule, makeWeightedAddRule
 
+from collections import defaultdict
 
 class Dummy:
-    pass
+    def __init__(self):
+        self.attrib = defaultdict(int)
 
 
 class TestMakeRules(unittest.TestCase):
     def testMakeSingleAttribRule(self):
         m = makeRule(['foo'])
         d = Dummy()
-        d.foo = 0
+        d.attrib["foo"] = 0
         self.assertEqual(0,m(d))
-        d.foo = 3
+        d.attrib["foo"] = 3
         self.assertEqual(3,m(d))
     def testMakeMultiAttribRule(self):
         m = makeRule(['foo','bar'])
         d = Dummy()
-        d.foo = 0
+        d.attrib["foo"] = 0
         self.assertEqual(0,m(d))
-        d.foo = 3
+        d.attrib["foo"] = 3
         self.assertEqual(0,m(d))
-        d.bar = 4
+        d.attrib["bar"] = 4
         self.assertEqual(12,m(d))
 
 
@@ -37,36 +39,36 @@ class TestMakeWeightedRules(unittest.TestCase):
     def testMakeSingleAttribRule(self):
         m = makeWeightedRule([[2,'foo']])
         d = Dummy()
-        d.foo = 0
+        d.attrib["foo"] = 0
         self.assertEqual(0,m(d))
-        d.foo = 3
+        d.attrib["foo"] = 3
         self.assertEqual(6,m(d))
     def testMakeMultiAttribRule(self):
         m = makeWeightedRule([[1,'foo'],[2,'bar']])
         d = Dummy()
-        d.foo = 0
+        d.attrib["foo"] = 0
         self.assertEqual(0,m(d))
-        d.foo = 3
+        d.attrib["foo"] = 3
         self.assertEqual(0,m(d))
-        d.bar = 4
+        d.attrib["bar"] = 4
         self.assertEqual(24,m(d))
 
 class TestMakeWeightedAddedRules(unittest.TestCase):
     def testMakeSingleAttribRule(self):
         m = makeWeightedAddRule([[1,'foo']])
         d = Dummy()
-        d.foo = 0
+        d.attrib["foo"] = 0
         self.assertEqual(0,m(d))
-        d.foo = 3
+        d.attrib["foo"] = 3
         self.assertEqual(3,m(d))
     def testMakeMultiAttribRule(self):
         m = makeWeightedAddRule([[1,'foo'],[2,'bar']])
         d = Dummy()
-        d.foo = 0
+        d.attrib["foo"] = 0
         self.assertEqual(0,m(d))
-        d.foo = 3
+        d.attrib["foo"] = 3
         self.assertEqual(3,m(d))
-        d.bar = 4
+        d.attrib["bar"] = 4
         self.assertEqual(11,m(d))
 
 

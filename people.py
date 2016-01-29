@@ -2,7 +2,9 @@ import random
 import sys
 from collections import defaultdict
 from utils import pickBest,makeWeightedRule
-        
+
+DEBUG=False
+
 #TODO: replace this with a list of lastnames or a generator for same
 class Family(object):
     ID=0
@@ -18,6 +20,50 @@ class Gene:
 attribNames = ["body","strength","dex","intelligence","charisma","will"]
 genes = [Gene(x) for x in attribNames]
 
+class Skill:
+    def __init__(self,name,attrib):
+        self.name = name
+        self.attrib = attrib
+
+skillDict = dict([[s.name,s] for s in [Skill("farming","body"),
+             Skill("melee","strength"),
+             Skill("archery","dex"),
+             Skill("reading","intelligence"),
+             Skill("diplomacy","charisma"),
+             Skill("leadership","charisma"),
+             Skill("skulduggery","dex"),
+             Skill("athletics","strength")]])
+
+        
+class AttributeMap:
+    def __init__(self,initialAttribs=None):
+        if initialAttribs:
+            self.attribs=dict([[a,0] for a in initialAttribs])
+        else:
+            self.attribs = {}
+        self.skills = {}
+    def __getitem__(self,key):
+        if key in self.attribs:
+            return self.attribs[key]
+        if key in skillDict:
+            sk = skillDict[key]
+            skillRanks = self.skills.get(key,0)
+            attribBonus = self.attribs.get(sk.attrib,0)
+            return skillRanks + attribBonus
+        return 0
+    def __setitem__(self,key,value):
+        if key in skillDict:
+            self.skills[key] = value
+        else:
+            self.attribs[key] = value
+    def __delitem__(self,key):
+        print "Who called delitem for ",key
+        pass
+    def __repr__(self):
+        return "Stats: " + str(self.attribs) + ", Skills: " + str(self.skills)
+        
+
+
         
 #This may want to go in its own class with crazy patterns and stuff but for now
 def court(men,women):
@@ -26,27 +72,28 @@ def court(men,women):
     women = [man for man in women if not man.spouse]
     wooed = defaultdict(list)
     for man in men:
-        men[man] = pickBest(women,makeWeightedRule([[man.__dict__[a],a] for a in attribNames]),len(women))
+        men[man] = pickBest(women,makeWeightedRule([[man.attrib[a],a] for a in attribNames]),len(women))
         wooed[men[man][0]].append(man)
     rejected = []
     previousRejected = []
     toReject = max(0,len(men) - len(women))
     while True:
-        
-        #print "Debug: men's ranking:"
-        #for m in men:
-        #    print m.name,[f.name for f in men[m]]
-        #print "Debug: wooed list:"
-        #for w in wooed:
-        #    print w.name,[m.name for m in wooed[w]]
-        #print "We will expect %d men to get rejected" % (toReject)
+
+        if DEBUG:
+            print "Debug: men's ranking:"
+            for m in men:
+                print m.name,[f.name for f in men[m]]
+            print "Debug: wooed list:"
+            for w in wooed:
+                print w.name,[m.name for m in wooed[w]]
+            print "We will expect %d men to get rejected" % (toReject)
     
 
         for woman in wooed:
             if len(wooed[woman]) <= 1:
                 #print "This woman (%s) has %d suitor(s)" % (woman.name,len(wooed[woman]))
                 continue
-            best = pickBest(wooed[woman],makeWeightedRule([[woman.__dict__[a],a] for a in attribNames]))[0]
+            best = pickBest(wooed[woman],makeWeightedRule([[woman.attrib[a],a] for a in attribNames]))[0]
             for m in wooed[woman]:
                 if m != best:
                     men[m].pop(0)
@@ -73,12 +120,13 @@ class Person(object):
     ID=0
     def __init__(self,parents=None):
         self.name=Person.ID
+        self.attrib = AttributeMap()
         Person.ID+=1
         if parents:
             self.mate(*parents)
             self.parents = parents
             self.family = parents[0].family
-            self.age = 0
+            self.attrib["age"] = 0
         else:
             self.generate()
             self.family = Family()
@@ -110,25 +158,21 @@ class Person(object):
         self.genes = p1_picked + p2_picked
 
     def generate(self):
-        self.age = random.randint(16,32)
+        self.attrib["age"] = random.randint(16,32)
         self.genes = genes + [random.choice(genes) for _ in xrange(8)]
 
     def get_stats(self):
-        self.body = 0
-        self.strength = 0
-        self.dex = 0
-        self.intelligence = 0
-        self.charisma = 0
-        self.will = 0
         for g in self.genes:
-            self.__dict__[g.name]+=1
-        self.__dict__[random.choice(genes).name]+=1
+            self.attrib[g.name]+=1
+        self.attrib[random.choice(genes).name]+=1
     def viable(self):
-        return self.body > 0 and self.strength > 0 and self.dex > 0 and self.intelligence > 0 and self.charisma > 0 and self.will > 0
+        return all([self.attrib[x] > 0 for x in attribNames])
     def print_stats(self,out=sys.stdout):
-        out.write("%d:%d:%d:%d:%d:%d"%(self.body,self.strength,self.dex,self.intelligence,self.charisma,self.will))
+        out.write(":".join([str(self.attrib[a]) for a in attribNames]))
     def json(self):
-        return dict([[v,self.__dict__[v]] for v in ["name","age","gender"] + attribNames])
+        return {"name":self.name,
+                "gender":self.gender,
+                "attributes":self.attrib}
 
 def simple_next_gen(population,out=sys.stdout):
     nextPop = []
