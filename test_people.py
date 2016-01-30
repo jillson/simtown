@@ -38,6 +38,11 @@ class TestAttributes(unittest.TestCase):
     self.assertEqual(5,p.attrib["trained"])
     p.attrib[attribNames[1]] = 2
     self.assertEqual(7,p.attrib["trained"])
+  def testRepr(self):
+    a = AttributeMap(attribNames)
+    x = str(a)
+    self.assertTrue(x)
+    
     
 
 class TestPeople(unittest.TestCase):

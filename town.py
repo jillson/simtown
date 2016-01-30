@@ -4,12 +4,22 @@ from utils import pickBest, makeRule, makeWeightedRule, makeWeightedAddRule
 from people import Person,reaper,court
 from job import Job
 
+class Building(object):
+    def __init__(self,name):
+        self.name = name
+
+defaultBuildings = ["TownHall","StoreHouse","Garrison","Chapel"]
+        
+buildingDict = dict([[name,Building(name)] for name in defaultBuildings])
+
+
 
 class Town(object):
     def __init__(self,name):
         self.name = name
         self.pop = reaper([Person() for _ in xrange(64)])
         self.pickInitialJobs()
+        self.buildings = dict([[name,buildingDict[name]] for name in defaultBuildings])
 
     def pickInitialJobs(self):
         self.jobs = {}
@@ -44,6 +54,6 @@ class Town(object):
         court(men+leaders,women)
         
 
-if __name__ == "__main__":
+if __name__ == "__main__": # pragma: no cover
     t = Town("Sandwich")
     

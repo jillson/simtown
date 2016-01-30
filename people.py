@@ -56,9 +56,6 @@ class AttributeMap:
             self.skills[key] = value
         else:
             self.attribs[key] = value
-    def __delitem__(self,key):
-        print "Who called delitem for ",key
-        pass
     def __repr__(self):
         return "Stats: " + str(self.attribs) + ", Skills: " + str(self.skills)
         
@@ -68,11 +65,6 @@ class AttributeMap:
 #This may want to go in its own class with crazy patterns and stuff but for now
 def court(men,women):
     #filter out marriaged people
-    for m in men:
-        if m.spouse:
-            print "Who's married already?"
-            import pdb
-            pdb.set_trace()
     men = dict([[man,[]] for man in men if not man.spouse])
     women = [man for man in women if not man.spouse]
     wooed = defaultdict(list)
@@ -83,7 +75,7 @@ def court(men,women):
     previousRejected = []
     toReject = max(0,len(men) - len(women))
     while True:
-        if DEBUG:
+        if DEBUG: # pragma: no cover
             print "Debug: men's ranking:"
             for m in men:
                 print m.name,[f.name for f in men[m]]
