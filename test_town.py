@@ -31,13 +31,17 @@ class TestTown(unittest.TestCase):
                 if x.spouse == None:
                     uf += 1
         self.assertEqual(len(t.pop),males+females)
+        print "Check... we had %d males (%d unmarried) and %d females (%d unmarried)" % (males,um,females,uf)
         bigger = max(males,females)
         smaller = min(males,females)
         bu = max(um,uf)
         su = min(um,uf)
+
         self.assertEqual(0,su)
         self.assertEqual(bigger-smaller,bu)
-
+    def testTownAttributes(self):
+        t = Town("dummy")
+        self.assertGreater(0,len(t.buildings))
 
   
 if __name__ == '__main__': # pragma: no cover

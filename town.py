@@ -28,6 +28,7 @@ class Town(object):
         women.remove(self.queen)
         self.king.marry(self.queen)
         #TODO: allow king to order priorites based on his traits
+        leaders = []
         for name,attribsZipped  in [
                 ["commander",[[1,"charisma"],[2,"strength"],[2,"body"],[1,"intelligence"]]],
                 ["priest",[[2,"charisma"],[2,"intelligence"],[1,"age"]]],
@@ -38,7 +39,9 @@ class Town(object):
             newJob = Job(name=name,level=500,prefWeights=[],attribWeights=attribsZipped)
             self.jobs[name] = newJob
             guy.setJob(newJob)
-        court(men,women)
+            leaders.append(guy)
+
+        court(men+leaders,women)
         
 
 if __name__ == "__main__":

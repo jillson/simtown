@@ -68,6 +68,11 @@ class AttributeMap:
 #This may want to go in its own class with crazy patterns and stuff but for now
 def court(men,women):
     #filter out marriaged people
+    for m in men:
+        if m.spouse:
+            print "Who's married already?"
+            import pdb
+            pdb.set_trace()
     men = dict([[man,[]] for man in men if not man.spouse])
     women = [man for man in women if not man.spouse]
     wooed = defaultdict(list)
@@ -78,7 +83,6 @@ def court(men,women):
     previousRejected = []
     toReject = max(0,len(men) - len(women))
     while True:
-
         if DEBUG:
             print "Debug: men's ranking:"
             for m in men:
@@ -99,16 +103,17 @@ def court(men,women):
                     men[m].pop(0)
                     rejected.append(m)
             wooed[woman] = [best]
-        rejected = set(rejected)
-        #NOTE: bug ... should modify so it requires that the rejected list be the same as the previous iteration
-        if len(rejected) <= toReject and rejected == previousRejected:
-            break
+        #rejected = set(rejected)
+        #print "%d men rejected" % (len(rejected))
         for r in rejected:
             if len(men[r]) > 0:
                 wooed[men[r][0]].append(r)
                 #print "Debug... rejected:",r.name
             #else:
                 #print "%s ran out of folks to ask" % r.name
+        if len(rejected) <= toReject and rejected == previousRejected:
+            #print "quitting now, with rejected",rejected
+            break
         previousRejected = rejected
         rejected = []
     for woman in wooed:
