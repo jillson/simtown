@@ -96,6 +96,7 @@ class TestJobTurns(unittest.TestCase):
         p.setJob(job)
         events = job.turn(p)
         self.assertTrue("work" in events)
+        self.assertFalse(True,"next up: make job return output based on how successful someone is (which will require adding attribRoll to person")
   
 if __name__ == '__main__': # pragma: no cover
     unittest.main()

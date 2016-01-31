@@ -50,6 +50,9 @@ class TestAttributes(unittest.TestCase):
     a = AttributeMap(attribNames)
     x = str(a)
     self.assertTrue(x)
+  def testRoll(self):
+    p = Person()
+    
     
 
 

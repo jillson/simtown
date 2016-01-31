@@ -7,7 +7,7 @@ except ImportError:
 
 from StringIO import StringIO
 
-from utils import pickBest, makeRule, makeWeightedRule, makeWeightedAddRule
+from utils import pickBest, makeRule, makeWeightedRule, makeWeightedAddRule, RNGTester
 
 from collections import defaultdict
 
@@ -16,6 +16,30 @@ class Dummy:
         self.attrib = defaultdict(int)
 
 
+class TestRNGTester(unittest.TestCase):
+    def testOneDieTester(self):
+        r = RNGTester(1,6)
+        for i in xrange(6):
+            self.assertEqual(i+1,r.randint(1,6))
+    def testTwoDieTester(self):
+        r = RNGTester(2,6)
+        for d1 in xrange(1,7):
+            for d2 in xrange(1,7):
+                self.assertEqual(d1,r.randint(1,6))
+                self.assertEqual(d2,r.randint(1,6))
+    def testError(self):
+        self.assertRaises(ValueError,RNGTester,0,6)
+        self.assertRaises(ValueError,RNGTester,1,0)
+        r = RNGTester(1,6)
+        self.assertRaises(ValueError,r.randint,1,5)
+    def testWrap(self):
+        r = RNGTester(4,2)
+        a = [r.randint(1,2) for _ in xrange(2**5)]
+        b = [r.randint(1,2) for _ in xrange(2**5)]
+        self.assertNotEqual(a,b)
+        c = [r.randint(1,2) for _ in xrange(2**6)]
+        self.assertEqual(a+b,c)
+        
 class TestMakeRules(unittest.TestCase):
     def testMakeSingleAttribRule(self):
         m = makeRule(['foo'])

@@ -2,6 +2,29 @@ from collections import defaultdict
 from operator import mul,add
 #from functools import reduce #uncomment for python3
 import random
+import itertools
+
+class RNGTester:
+    def __init__(self,ndie,sides):
+        if ndie <= 0:
+            raise ValueError("RNGTester","need positive number of dice")
+        if sides <= 0:
+            raise ValueError("RNGTester","need positive number of sides")
+        self.ndie = ndie
+        self.sides = sides
+        r = range(1,sides+1)
+        self.combo = [r]*ndie
+        self.generator = self.gen()
+    def randint(self,low,high):
+        if low != 1 or high != self.sides:
+            raise ValueError("randint","randint should be from 1 to %d, not %d to %d" % (self.sides,low,high))
+        return next(self.generator)
+    def gen(self):
+        while True:
+            for c in itertools.product(*self.combo):
+                for v in c:
+                    yield v
+
 
 def pickBest(alist,metric,n=1,picker=None):
     if len(alist) < n:
