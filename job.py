@@ -38,4 +38,8 @@ class Job:
     def calcPreference(self,attribs):
         aRank = sum([a[0]*a[1] for a in zip(attribs,self.prefWeights)])
         return aRank + self.level * 10
+
+    def turn(self,person):
+        return {"work","foo"}
+    
     

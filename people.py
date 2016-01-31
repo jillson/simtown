@@ -132,6 +132,34 @@ class Person(object):
         self.job = None
         self.spouse = None
 
+    def deathCheck(self):
+        #TODO: add other checks here that call attrib etc.
+        if self.attrib["age"] > 120:
+            return True
+        return False
+
+    def birthCheck(self):
+        #TODO: add body check (possibly with male and female)
+        if self.gender == "M": return False
+        if self.spouse == None: return False
+        age = self.attrib["age"]
+        return 16 <= age <= 40
+
+    def turn(self):
+        events = defaultdict(list)
+        self.attrib["age"] += 1
+        if self.deathCheck():
+            events["death"].append(self)
+        if self.birthCheck():
+            #TODO: also make a death-like check here
+            #TODO: make deathCheck above prevent this check
+            events["birth"].append(Person(parents=(self.spouse,self)))
+        if self.job:
+            job_events = self.job.turn(self)
+            for je in job_events:
+                events[je].append(job_events[je])
+        return events
+
     def setJob(self,newJob):
         if self.job:
             self.job.removeWorker(self)

@@ -13,6 +13,16 @@ defaultBuildings = ["TownHall","StoreHouse","Garrison","Chapel"]
 buildingDict = dict([[name,Building(name)] for name in defaultBuildings])
 
 
+#class Event(object):
+#    pass
+
+#class OrcAttackEvent(Event):
+#    def __init__(self):
+#        pass
+#    def calculateNumber(self):
+#        return min(10,int(random.lognormvariate(0,0.5)))
+#    def findResults(self,aTown):
+#        pass
 
 class Town(object):
     def __init__(self,name):

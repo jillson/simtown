@@ -88,6 +88,14 @@ class TestJob(unittest.TestCase):
                 self.assertEqual(better.job,j)
                 self.assertGreaterEqual(j.rank(better),j.rank(worse))
 
+
+class TestJobTurns(unittest.TestCase):
+    def testBasicTurn(self):
+        job = Job(name="testjob",level=1,prefWeights=allOnes,attribWeights=allOnesZipped)
+        p = FakePerson()
+        p.setJob(job)
+        events = job.turn(p)
+        self.assertTrue("work" in events)
   
 if __name__ == '__main__': # pragma: no cover
     unittest.main()
