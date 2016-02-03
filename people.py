@@ -131,6 +131,10 @@ class Person(object):
         self.get_stats()
         self.job = None
         self.spouse = None
+    def roll(self,attribute):
+        bonus = self.attrib[attribute]
+        return bonus + sum([(random.randint(1,6)-1)//2-1 for _ in xrange(4)])
+        
 
     def deathCheck(self):
         #TODO: add other checks here that call attrib etc.
@@ -157,7 +161,7 @@ class Person(object):
         if self.job:
             job_events = self.job.turn(self)
             for je in job_events:
-                events[je].append(job_events[je])
+                events[je] += job_events[je]
         return events
 
     def setJob(self,newJob):

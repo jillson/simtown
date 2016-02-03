@@ -1,4 +1,6 @@
 from collections import defaultdict
+import random
+
 
 from people import attribNames 
 from utils import makeWeightedRule, pickBest
@@ -8,6 +10,11 @@ class WorkerWrapper:
         self.worker = worker
         self.attrib = {"rank":rank}
 
+
+class WorkResult:
+    def __init__(self,amt,source):
+        self.amt = amt
+        self.source = source
 
 class Job:
     def __init__(self,name,level,prefWeights,attribWeights):
@@ -40,6 +47,8 @@ class Job:
         return aRank + self.level * 10
 
     def turn(self,person):
-        return {"work","foo"}
+        attribToCheck = random.choice(self.attribWeights)[1]
+        rez = person.roll(attribToCheck)
+        return {"work":[WorkResult(rez,self.name)]}
     
     

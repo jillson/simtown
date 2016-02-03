@@ -52,6 +52,15 @@ class TestTown(unittest.TestCase):
         for b in defaultBuildings:
             building = t.buildings.get(b,None)
             self.assertTrue(building != None,"Missing " + building.name)
+
+
+class TestTownTurn(unittest.TestCase):
+    def testOutputOfTurn(self):
+        t = Town("test")
+        startPopIds = [p.name for p in t.pop]
+        t.turn()
+        endPopIds = [p.name for p in t.pop]
+        self.assertNotEqual(startPopIds,endPopIds)
         
   
 if __name__ == '__main__': # pragma: no cover

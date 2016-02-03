@@ -3,12 +3,7 @@ import unittest
 from mock import patch,Mock
 from people import Person, AttributeMap, Skill, skillDict, simple_next_gen, reaper, attribNames, court
 from StringIO import StringIO
-
-mockTrueFunc = Mock()
-mockTrueFunc.return_value = True
-mockFalseFunc = Mock()
-mockFalseFunc.return_value = False
-
+from utils_for_testing import *
 
 class FakeJob:
   def __init__(self):
@@ -52,6 +47,16 @@ class TestAttributes(unittest.TestCase):
     self.assertTrue(x)
   def testRoll(self):
     p = Person()
+    p.attrib["dummyAttrib"]=3
+    with patch("random.randint",side_effect=f_all_1):
+      self.assertEqual(-1,p.roll("dummyAttrib"))
+    with patch("random.randint",side_effect=f_all_6):
+      self.assertEqual(p.roll("dummyAttrib"),7)
+    with patch("random.randint",side_effect=f_repeat_1_to_6):
+      self.assertEqual(p.roll("dummyAttrib"),1)
+    with patch("random.randint",side_effect=f_repeat_1_to_6):
+      self.assertEqual(p.roll("dummyAttrib"),3)
+
     
     
 
@@ -267,6 +272,14 @@ class TestPeople(unittest.TestCase):
     self.assertEqual(m.spouse,None)
     self.assertEqual(m2.spouse,f)
     self.assertEqual(f.spouse,m2)
+
+  def test_courting_unaged(self):
+    men = [Person() for _ in xrange(3)]
+    women = [Person() for _ in xrange(3)]
+    for i in xrange(3):
+      men[i].gender = "M"
+      women[i].gender = "F"
+      
 
   def test_courting(self):
     self.common_courting(4,4)

@@ -11,6 +11,8 @@ from collections import defaultdict
 
 from job import Job
 from people import Person, attribNames
+from utils_for_testing import *
+
 
 class FakePerson:
     def __init__(self):
@@ -22,6 +24,8 @@ class FakePerson:
         if job:
             job.addWorker(self)
         self.job = job
+    def roll(self,attrib):
+        return 1
 
 
 allOnes = [1]*len(attribNames)
@@ -90,13 +94,24 @@ class TestJob(unittest.TestCase):
 
 
 class TestJobTurns(unittest.TestCase):
+    def testAttribJobTest(self):
+        job = Job(name="testjob",level=1,prefWeights=allOnes,attribWeights=allOnesZipped)
+        p = FakePerson()
+        for i,attrib in enumerate(attribNames):
+            p.roll = Mock(return_value=1)
+            with patch("random.choice",return_value=[1,attrib]):
+                job.turn(p)
+                p.roll.assert_called_once_with(attrib)
+
+
     def testBasicTurn(self):
         job = Job(name="testjob",level=1,prefWeights=allOnes,attribWeights=allOnesZipped)
         p = FakePerson()
         p.setJob(job)
         events = job.turn(p)
         self.assertTrue("work" in events)
-        self.assertFalse(True,"next up: make job return output based on how successful someone is (which will require adding attribRoll to person")
+        workObj = events["work"][0]
+        self.assertEqual(workObj.amt,1)
   
 if __name__ == '__main__': # pragma: no cover
     unittest.main()

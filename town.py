@@ -1,4 +1,5 @@
 import random
+from collections import defaultdict
 
 from utils import pickBest, makeRule, makeWeightedRule, makeWeightedAddRule
 from people import Person,reaper,court
@@ -11,6 +12,7 @@ class Building(object):
 defaultBuildings = ["TownHall","StoreHouse","Garrison","Chapel"]
         
 buildingDict = dict([[name,Building(name)] for name in defaultBuildings])
+
 
 
 #class Event(object):
@@ -30,6 +32,22 @@ class Town(object):
         self.pop = reaper([Person() for _ in xrange(64)])
         self.pickInitialJobs()
         self.buildings = dict([[name,buildingDict[name]] for name in defaultBuildings])
+        self.eventHandlerMap = {"birth":self.handleBirths,
+                                "death":self.handleDeaths,
+                                "work":self.handleWork}
+
+    def handleBirths(self,birthObjs):
+        self.pop += reaper(birthObjs)
+
+    def handleDeaths(self,deathObjs):
+        for deadPerson in set(deathObjs):
+            self.pop.remove(deadPerson)
+
+    def handleWork(self,workObjs):
+        workTypes = defaultdict(int)
+        for work in workObjs:
+            workTypes[work.source] += work.amt
+        print "Shoudl do something with ", workTypes
 
     def pickInitialJobs(self):
         self.jobs = {}
@@ -62,6 +80,29 @@ class Town(object):
             leaders.append(guy)
 
         court(men+leaders,women)
+        self.men = men+leaders+[self.king]
+        self.women = women+[self.queen]
+
+    def getEvents(self):
+        events = defaultdict(list)
+        for p in self.pop:
+            pevents = p.turn()
+            for k in pevents:
+                events[k] += pevents[k]
+        return events
+
+    def handleEvents(self,events):
+        for eventType in events:
+            eh = self.eventHandlerMap.get(eventType)
+            if eh:
+                eh(events[eventType])
+            else:
+                print "Warning, we haven't implemented ",eventType
+    
+    def turn(self):
+        self.handleEvents(self.getEvents())
+
+        
         
 
 if __name__ == "__main__": # pragma: no cover
