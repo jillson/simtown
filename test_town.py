@@ -46,6 +46,14 @@ class TestTown(unittest.TestCase):
 
         self.assertEqual(1,su)
         self.assertEqual(bigger-smaller,bu-1)
+
+    def testJobManagement(self):
+        t = Town("dummy")
+        employed = 0
+        for p in t.pop:
+            if p.job:
+                employed += 1
+        self.assertGreaterEqual(employed * 3,len(t.pop))
     def testTownBuildings(self):
         t = Town("dummy")
         self.assertGreater(len(t.buildings),0,"Hmm, why you no have buildings")

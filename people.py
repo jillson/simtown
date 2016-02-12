@@ -62,56 +62,6 @@ class AttributeMap:
 
 
         
-#This may want to go in its own class with crazy patterns and stuff but for now
-def court(men,women):
-    #filter out marriaged people
-    men = dict([[man,[]] for man in men if not man.spouse])
-    women = [man for man in women if not man.spouse]
-    wooed = defaultdict(list)
-    for man in men:
-        men[man] = pickBest(women,makeWeightedRule([[man.attrib[a],a] for a in attribNames]),len(women))
-        wooed[men[man][0]].append(man)
-    rejected = []
-    previousRejected = []
-    toReject = max(0,len(men) - len(women))
-    while True:
-        if DEBUG: # pragma: no cover
-            print "Debug: men's ranking:"
-            for m in men:
-                print m.name,[f.name for f in men[m]]
-            print "Debug: wooed list:"
-            for w in wooed:
-                print w.name,[m.name for m in wooed[w]]
-            print "We will expect %d men to get rejected" % (toReject)
-    
-
-        for woman in wooed:
-            if len(wooed[woman]) <= 1:
-                #print "This woman (%s) has %d suitor(s)" % (woman.name,len(wooed[woman]))
-                continue
-            best = pickBest(wooed[woman],makeWeightedRule([[woman.attrib[a],a] for a in attribNames]))[0]
-            for m in wooed[woman]:
-                if m != best:
-                    men[m].pop(0)
-                    rejected.append(m)
-            wooed[woman] = [best]
-        #rejected = set(rejected)
-        #print "%d men rejected" % (len(rejected))
-        for r in rejected:
-            if len(men[r]) > 0:
-                wooed[men[r][0]].append(r)
-                #print "Debug... rejected:",r.name
-            #else:
-                #print "%s ran out of folks to ask" % r.name
-        if len(rejected) <= toReject and rejected == previousRejected:
-            #print "quitting now, with rejected",rejected
-            break
-        previousRejected = rejected
-        rejected = []
-    for woman in wooed:
-        if wooed[woman]:
-            wooed[woman][0].marry(woman)
-        
 
 class Person(object):
     ID=0

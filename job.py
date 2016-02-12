@@ -16,6 +16,11 @@ class WorkResult:
         self.amt = amt
         self.source = source
 
+class JobAttribWrapper:
+    def __init__(self,job):
+        self.job = job
+        self.attrib = job.prefWeights
+
 class Job:
     def __init__(self,name,level,prefWeights,attribWeights):
         self.name = name
@@ -52,3 +57,12 @@ class Job:
         return {"work":[WorkResult(rez,self.name)]}
     
     
+farmJob = Job("farmer",level=1,prefWeights=[[1,"body"],[1,"strength"]],attribWeights=[[1,"body"],[1,"strength"]])
+hunterJob = Job("hunter",level=1,prefWeights=[[1,"dex"],[1,"strength"]],attribWeights=[[1,"dex"],[1,"strength"]])
+craftJob = Job(level=1,prefWeights=[[1,"intelligence"],[1,"strength"]],attribWeights=[[1,"intelligence"],[1,"strength"]])
+servantJob = Job(level=1,prefWeights=[[1,"charisma"],[1,"will"]],attribWeights=[[1,"charisma"],[1,"will"]])
+soldierJob = Job(level=1,prefWeights=[[1,"will"],[1,"strength"]],attribWeights=[[1,"will"],[1,"body"]])
+entertainerJob = Job(level=1,prefWeights=[[1,"charisma"],[1,"dex"]],attribWeights=[[1,"charisma"],[1,"dex"]])
+
+jobList = [farmJob,hunterJob,craftJob,servantJob,soldierJob,entertainerJob]
+jobPickList = dict([[job.name,JobAttribWrapper(job)] for job in jobList])

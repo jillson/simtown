@@ -281,35 +281,7 @@ class TestPeople(unittest.TestCase):
       women[i].gender = "F"
       
 
-  def test_courting(self):
-    self.common_courting(4,4)
-    self.common_courting(6,4)
-    self.common_courting(4,6)
-    
-
-  def common_courting(self,nm,nw):
-    men = [Person() for _ in xrange(nm)]
-    women = [Person() for _ in xrange(nw)]
-    biggest = max(nm,nw)+10
-    for i in xrange(nm):
-      men[i].gender = "M"
-      for a in attribNames:
-        men[i].attrib[a] = biggest-i
-    for i in xrange(nw):
-      women[i].gender = "F"
-      for a in attribNames:
-        women[i].attrib[a] = biggest-i
-
-    court(men,women)
-    for i in xrange(min(nm,nw)):
-      self.assertEqual(men[i].spouse,women[i])
-      self.assertEqual(women[i].spouse,men[i])
-    if nm > nw:
-      extra = men
-    else:
-      extra = women
-    for i in xrange(min(nm,nw),max(nm,nw)):
-      self.assertEqual(extra[i].spouse,None)
+  
 
       
     
