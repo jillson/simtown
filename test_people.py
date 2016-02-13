@@ -58,9 +58,6 @@ class TestAttributes(unittest.TestCase):
       self.assertEqual(p.roll("dummyAttrib"),3)
 
     
-    
-
-
 class TestBirth(unittest.TestCase):
   def setUp(self):
     h = Person()
@@ -273,16 +270,29 @@ class TestPeople(unittest.TestCase):
     self.assertEqual(m2.spouse,f)
     self.assertEqual(f.spouse,m2)
 
-  def test_courting_unaged(self):
+
+  def test_simple_courting(self):
+    men = [Person() for _ in xrange(1)]
+    women = [Person() for _ in xrange(1)]
+    for i in xrange(1):
+      men[i].gender = "M"
+      women[i].gender = "F"
+    court(men,women)
+    self.assertEqual(men[0].spouse,women[0])
+    
+  def test_courting_underaged(self):
     men = [Person() for _ in xrange(3)]
     women = [Person() for _ in xrange(3)]
     for i in xrange(3):
       men[i].gender = "M"
       women[i].gender = "F"
-      
-
-  
-
+      men[i].attrib["age"] = i * 10
+      women[i].attrib["age"] = i * 10
+    court(men,women)
+    for i in xrange(2):
+      self.assertEqual(men[i].spouse,None)
+      self.assertEqual(women[i].spouse,None)
+    self.assertEqual(men[2].spouse,women[2])
       
     
 if __name__ == '__main__': # pragma: no cover

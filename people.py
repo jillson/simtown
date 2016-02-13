@@ -3,7 +3,22 @@ import sys
 from collections import defaultdict
 from utils import pickBest,makeWeightedRule
 
+from matching import Matchmaker, GenericApplicant, GenericTarget
+
 DEBUG=False
+
+attribNames = ["body","strength","dex","intelligence","charisma","will"]
+
+def court(men,women):
+    applicants = [GenericApplicant(m,m.attrib,attribNames) for m in men if m.attrib["age"] >= 16 and not m.spouse]
+    targets = [GenericTarget(1,w,w.attrib,attribNames) for w in women if w.attrib["age"] >= 16 and not w.spouse]
+    m = Matchmaker()
+    m.match(applicants,targets)
+    for m in applicants:
+        if m.selected:
+            m.obj.marry(m.selected[0].obj)
+
+
 
 #TODO: replace this with a list of lastnames or a generator for same
 class Family(object):
@@ -17,7 +32,7 @@ class Gene:
     def __init__(self,name):
         self.name = name
 
-attribNames = ["body","strength","dex","intelligence","charisma","will"]
+
 genes = [Gene(x) for x in attribNames]
 
 class Skill:

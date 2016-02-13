@@ -65,6 +65,8 @@ class TestTown(unittest.TestCase):
 class TestTownTurn(unittest.TestCase):
     def testOutputOfTurn(self):
         t = Town("test")
+        self.assertGreater(t.resources["food"],0)
+        startFood = t.resources["food"]
         startPopIds = [p.name for p in t.pop]
         t.turn()
         endPopIds = [p.name for p in t.pop]

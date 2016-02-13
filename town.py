@@ -3,7 +3,8 @@ from collections import defaultdict
 
 from utils import pickBest, makeRule, makeWeightedRule, makeWeightedAddRule
 from people import Person,reaper,court
-from job import Job
+
+from job import Job,jobList,assignJobs
 
 class Building(object):
     def __init__(self,name):
@@ -35,6 +36,7 @@ class Town(object):
         self.eventHandlerMap = {"birth":self.handleBirths,
                                 "death":self.handleDeaths,
                                 "work":self.handleWork}
+        self.resources = defaultdict(int,{"food":100,"gold":100,"wood":100})
 
     def handleBirths(self,birthObjs):
         self.pop += reaper(birthObjs)
@@ -48,6 +50,12 @@ class Town(object):
         for work in workObjs:
             workTypes[work.source] += work.amt
         print "Shoudl do something with ", workTypes
+        self.resources["gold"] += workTypes["crafter"]
+        landWork = max(0,workTypes["farmer"] - self.resources["land"])
+        foodOutput = min(workTypes["farmer"], self.resources["land"]) + workTypes["hunter"]
+        self.resources["food"] += 4 * foodOutput
+        self.resources["land"] += landWork
+            
 
     def pickInitialJobs(self):
         self.jobs = {}
@@ -80,6 +88,8 @@ class Town(object):
             leaders.append(guy)
 
         court(men+leaders,women)
+        assignJobs(men,jobList)
+        
         self.men = men+leaders+[self.king]
         self.women = women+[self.queen]
 
@@ -101,8 +111,12 @@ class Town(object):
     
     def turn(self):
         self.handleEvents(self.getEvents())
-
-        
+        self.resources["food"] -= len(self.pop)
+        if self.resources["food"] < 0:
+            print "Uhoh, we're starving"
+            self.resources["food"] = 0
+        self.resources["gold"] -= len(self.pop) 
+        self.resources["gold"] += len(self.pop) #100% taxes... where's Robin Hood?
         
 
 if __name__ == "__main__": # pragma: no cover
