@@ -5,6 +5,8 @@ from utils import pickBest,makeWeightedRule
 
 from matching import Matchmaker, GenericApplicant, GenericTarget
 
+from history import history
+
 DEBUG=False
 
 attribNames = ["body","strength","dex","intelligence","charisma","will"]

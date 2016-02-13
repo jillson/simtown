@@ -6,6 +6,8 @@ from people import Person,reaper,court
 
 from job import Job,jobList,assignJobs
 
+from history import history
+
 class Building(object):
     def __init__(self,name):
         self.name = name
