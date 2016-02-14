@@ -63,14 +63,27 @@ class TestTown(unittest.TestCase):
 
 
 class TestTownTurn(unittest.TestCase):
+    def setUp(self):
+        self.t = Town("test")
     def testOutputOfTurn(self):
-        t = Town("test")
+        t = self.t
         self.assertGreater(t.resources["food"],0)
         startFood = t.resources["food"]
         startPopIds = [p.name for p in t.pop]
         t.turn()
         endPopIds = [p.name for p in t.pop]
         self.assertNotEqual(startPopIds,endPopIds)
+    def testEvents(self):
+        t = self.t
+        testEvents = {"death":[t.pop[0]],"bogus":[]}
+        dead = t.pop[0]
+        t.handleEvents(testEvents)
+        self.assertTrue(dead not in t.pop)
+    def testStarving(self):
+        t = self.t
+        t.resources["food"] = -1000
+        t.turn()
+        self.assertEqual(0,t.resources["food"])
         
   
 if __name__ == '__main__': # pragma: no cover
