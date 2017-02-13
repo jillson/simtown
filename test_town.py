@@ -80,12 +80,31 @@ class TestTownTurn(unittest.TestCase):
         t.handleEvents(testEvents)
         self.assertTrue(dead not in t.pop)
     def testStarving(self):
+        """ checks that if food supply dries up, food gets reset to zero but we kill off the weaker or poorer or whatever folks """
         t = self.t
         t.resources["food"] = -1000
+        nonBabiesPre = len([p for p in t.pop if p.attrib["age"] > 1])
         t.turn()
+        nonBabies = len([p for p in t.pop if p.attrib["age"] > 1])
         self.assertEqual(0,t.resources["food"])
-        
-  
+        self.assertGreater(nonBabiesPre,nonBabies)
+    def testEconomy(self):
+        """ checks if a person gets gold based on some demand for their services / skill levels """
+        t = self.t
+        t.resources["food"] = 1000
+        levelOneFolks = [x for x in t.pop if x.attrib["joblevel"] > 0]
+        self.assertGreater(len(levelOneFolks),0)
+        dummy = levelOneFolks[0]
+        self.assertEqual(0,dummy.attrib["gold"])
+        t.turn()
+        self.assertEqual(dummy.attrib["joblevel"],dummy.attrib["gold"])
+        dummy.attrib["gold"] = 1000
+        t.resources["food"] = 10
+        t.turn()
+        self.assertTrue(dummy in t.pop)
+        self.assertLess(dummy.attrib["gold"],1000)
+    def testSupplyDemand(self):
+        pass
 if __name__ == '__main__': # pragma: no cover
     unittest.main()
 
